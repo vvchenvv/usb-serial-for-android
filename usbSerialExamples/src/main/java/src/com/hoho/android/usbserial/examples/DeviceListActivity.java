@@ -172,7 +172,6 @@ public class DeviceListActivity extends Activity {
                             driver, Integer.valueOf(ports.size()), ports.size() == 1 ? "" : "s"));
                     result.addAll(ports);
                 }
-
                 return result;
             }
 

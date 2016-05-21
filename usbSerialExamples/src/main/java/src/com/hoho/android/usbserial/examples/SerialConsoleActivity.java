@@ -28,6 +28,8 @@ import android.hardware.usb.UsbDeviceConnection;
 import android.hardware.usb.UsbManager;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
+import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.ScrollView;
@@ -69,6 +71,11 @@ public class SerialConsoleActivity extends Activity {
     private CheckBox chkDTR;
     private CheckBox chkRTS;
 
+    private Button BtnOpenPort;
+    private Button BtnSendData;
+    private Button BtnClosePort;
+    private TextView textShowData;
+
     private final ExecutorService mExecutor = Executors.newSingleThreadExecutor();
 
     private SerialInputOutputManager mSerialIoManager;
@@ -87,6 +94,7 @@ public class SerialConsoleActivity extends Activity {
                 @Override
                 public void run() {
                     SerialConsoleActivity.this.updateReceivedData(data);
+
                 }
             });
         }
@@ -101,6 +109,10 @@ public class SerialConsoleActivity extends Activity {
         mScrollView = (ScrollView) findViewById(R.id.demoScroller);
         chkDTR = (CheckBox) findViewById(R.id.checkBoxDTR);
         chkRTS = (CheckBox) findViewById(R.id.checkBoxRTS);
+        BtnClosePort = (Button)findViewById(R.id.BTNClosePort);
+        BtnOpenPort = (Button)findViewById(R.id.BTNInitPort);
+        BtnSendData = (Button)findViewById(R.id.BTNSendData);
+        textShowData = (TextView)findViewById(R.id.TxtShowData);
 
         chkDTR.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
@@ -117,6 +129,49 @@ public class SerialConsoleActivity extends Activity {
                 try {
                     sPort.setRTS(isChecked);
                 }catch (IOException x){}
+            }
+        });
+
+        BtnOpenPort.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (sPort == null) {
+                    mTitleTextView.setText("No serial device.");
+                } else {
+                    final UsbManager usbManager = (UsbManager) getSystemService(Context.USB_SERVICE);
+
+                    UsbDeviceConnection connection = usbManager.openDevice(sPort.getDriver().getDevice());
+                    if (connection == null) {
+                        mTitleTextView.setText("Opening device failed");
+                        return;
+                    }
+
+                    try {
+                        sPort.open(connection);
+                        sPort.setParameters(115200, 8, UsbSerialPort.STOPBITS_1, UsbSerialPort.PARITY_NONE);
+                        System.out.println("Open Success!");
+
+                    } catch (IOException e) {
+                        Log.e(TAG, "Error setting up device: " + e.getMessage(), e);
+                        textShowData.setText("Error opening device: " + e.getMessage());
+                        return;
+                    }
+                    mTitleTextView.setText("Serial device: " + sPort.getClass().getSimpleName());
+                }
+            }
+        });
+
+        BtnSendData.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                byte src[] = {0x55,0x66,0x77};
+                try {
+                    sPort.write(src,100);
+                } catch (IOException e){
+                    Log.e(TAG, "Error Send Data: " + e.getMessage(), e);
+                    textShowData.setText("Error opening device: " + e.getMessage());
+                    return;
+                }
             }
         });
 
@@ -154,7 +209,7 @@ public class SerialConsoleActivity extends Activity {
 
             UsbDeviceConnection connection = usbManager.openDevice(sPort.getDriver().getDevice());
             if (connection == null) {
-                mTitleTextView.setText("Opening device failed");
+                textShowData.setText("Opening device failed");
                 return;
             }
 
@@ -208,9 +263,14 @@ public class SerialConsoleActivity extends Activity {
     }
 
     private void updateReceivedData(byte[] data) {
+        for (int i = 0; i < data.length - 1 ; i++){
+            System.out.print("Data arrave");
+            System.out.println(data[i]);
+            System.out.print(data[i]);
+        }
         final String message = "Read " + data.length + " bytes: \n"
-                + HexDump.dumpHexString(data) + "\n\n";
-        mDumpTextView.append(message);
+                + HexDump.dumpHexString(data) + "\n";
+        textShowData.append(message);
         mScrollView.smoothScrollTo(0, mDumpTextView.getBottom());
     }
 

@@ -39,7 +39,7 @@
         android:background="#eeeeee" />
 
     <ScrollView
-        android:id="@+id/demoScroller"
+
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
          >
@@ -51,4 +51,44 @@
             android:layout_height="wrap_content"
             android:typeface="monospace" />
     </ScrollView>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center">
+            <Button
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/BTNInitPort"
+                android:text="@string/textBtnInitPort"
+                android:textStyle="bold"/>
+            <Button
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/BTNSendData"
+                android:text="@string/textBtnSendData"/>
+            <Button
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/BTNClosePort"
+                android:text="@string/textBtnClosePort"/>
+        </LinearLayout>
+        <ScrollView
+            android:id="@+id/demoScroller"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:layout_marginTop="20dp">
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/TxtShowData"
+                android:minHeight="150dp"/>
+
+        </ScrollView>
+
+    </LinearLayout>
 </LinearLayout>

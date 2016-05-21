@@ -8,8 +8,7 @@ android {
         minSdkVersion 14
         targetSdkVersion 22
 
-        testApplicationId "com.hoho.android.usbserial.examples"
-        testInstrumentationRunner "android.test.InstrumentationTestRunner"
+       
     }
 
     buildTypes {
